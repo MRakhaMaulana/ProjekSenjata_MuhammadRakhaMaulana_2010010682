@@ -39,7 +39,12 @@
         </constraints>
         <properties/>
         <border type="none"/>
-        <children/>
+        <children>
+          <component id="b156a" class="javax.swing.JTable" binding="viewTable">
+            <constraints/>
+            <properties/>
+          </component>
+        </children>
       </scrollpane>
       <grid id="ecfd2" binding="buttonPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
         <constraints>
