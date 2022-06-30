@@ -31,6 +31,10 @@ public class PistolViewFrame extends JFrame {
         batalButton.addActionListener(e -> {
             isiTable();
         });
+        tambahButton.addActionListener(e -> {
+            PistolInputFrame inputFrame = new PistolInputFrame();
+            inputFrame.setVisible(true);
+        });
         hapusButton.addActionListener(e -> {
             int barisTerpilih = viewTable.getSelectedRow();
             if(barisTerpilih < 0){
