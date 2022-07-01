@@ -23,7 +23,7 @@
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="6e303" class="javax.swing.JLabel">
@@ -41,7 +41,7 @@
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="725af" class="javax.swing.JLabel">
@@ -49,17 +49,17 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Jenis Pistol"/>
+          <text value="Tipe Pistol"/>
         </properties>
       </component>
-      <component id="cb652" class="javax.swing.JTextField" binding="jenisTextField">
+      <component id="cb652" class="javax.swing.JTextField" binding="tipeTextField">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="9e10d" class="javax.swing.JLabel">
@@ -77,7 +77,7 @@
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="9f0a8" class="javax.swing.JLabel">
@@ -85,17 +85,17 @@
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Kecepatan Peluru"/>
+          <text value="Jenis Peluru"/>
         </properties>
       </component>
-      <component id="e5d9e" class="javax.swing.JTextField" binding="kecepatanTextField">
+      <component id="e5d9e" class="javax.swing.JTextField" binding="jenisTextField">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="bce4f" class="javax.swing.JLabel">
@@ -113,7 +113,7 @@
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="aef11" class="javax.swing.JLabel">
@@ -131,7 +131,7 @@
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <component id="59fe0" class="javax.swing.JLabel">
@@ -149,7 +149,7 @@
           </grid>
         </constraints>
         <properties>
-          <enabled value="false"/>
+          <enabled value="true"/>
         </properties>
       </component>
       <grid id="9c738" binding="buttonPanel" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

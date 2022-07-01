@@ -35,6 +35,24 @@ public class PistolViewFrame extends JFrame {
             PistolInputFrame inputFrame = new PistolInputFrame();
             inputFrame.setVisible(true);
         });
+        ubahButton.addActionListener(e -> {
+            int barisTerpilih = viewTable.getSelectedRow();
+            if(barisTerpilih < 0){
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Pilih data dulu"
+                );
+                return;
+            }
+            TableModel tm = viewTable.getModel();
+            String idString = tm.getValueAt(barisTerpilih,0).toString();
+            int id = Integer.parseInt(idString);
+
+            PistolInputFrame inputFrame = new PistolInputFrame();
+            inputFrame.setId_pistol(id);
+            inputFrame.isiKomponen();
+            inputFrame.setVisible(true);
+        });
         hapusButton.addActionListener(e -> {
             int barisTerpilih = viewTable.getSelectedRow();
             if(barisTerpilih < 0){
@@ -78,7 +96,7 @@ public class PistolViewFrame extends JFrame {
                 ps.setString(1, keyword);
                 ResultSet rs = ps.executeQuery();
 
-                String[] header = {"Id Pistol", "Nama", "Jenis", "Jarak", "Kecepatan", "Amunisi", "Berat", "Warna"};
+                String[] header = {"Id Pistol", "Nama", "Tipe", "Jarak", "Peluru", "Amunisi", "Berat", "Warna"};
                 DefaultTableModel dtm = new DefaultTableModel(header,0);
                 viewTable.setModel(dtm);
                 viewTable.getColumnModel().getColumn(0).setWidth(32);
@@ -89,9 +107,9 @@ public class PistolViewFrame extends JFrame {
                 while (rs.next()){
                     row[0] = rs.getInt("Id_pistol");
                     row[1] = rs.getString("nama_pistol");
-                    row[2] = rs.getString("jenis_pistol");
+                    row[2] = rs.getString("tipe_pistol");
                     row[3] = rs.getInt("jarak_pistol");
-                    row[4] = rs.getString("kecepatan_pistol");
+                    row[4] = rs.getString("jenis_peluru");
                     row[5] = rs.getString("amunisi_pistol");
                     row[6] = rs.getString("berat_pistol");
                     row[7] = rs.getString("warna_pistol");
@@ -125,7 +143,7 @@ public class PistolViewFrame extends JFrame {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
 
-            String[] header = {"Id Pistol", "Nama", "Jenis", "Jarak", "Kecepatan", "Amunisi", "Berat", "Warna"};
+            String[] header = {"Id Pistol", "Nama", "Tipe", "Jarak", "Peluru", "Amunisi", "Berat", "Warna"};
             DefaultTableModel dtm = new DefaultTableModel(header,0);
             viewTable.setModel(dtm);
             viewTable.getColumnModel().getColumn(0).setWidth(32);
@@ -136,9 +154,9 @@ public class PistolViewFrame extends JFrame {
             while (rs.next()){
                 row[0] = rs.getInt("Id_pistol");
                 row[1] = rs.getString("nama_pistol");
-                row[2] = rs.getString("jenis_pistol");
+                row[2] = rs.getString("tipe_pistol");
                 row[3] = rs.getInt("jarak_pistol");
-                row[4] = rs.getString("kecepatan_pistol");
+                row[4] = rs.getString("jenis_peluru");
                 row[5] = rs.getString("amunisi_pistol");
                 row[6] = rs.getString("berat_pistol");
                 row[7] = rs.getString("warna_pistol");
