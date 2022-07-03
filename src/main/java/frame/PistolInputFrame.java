@@ -1,51 +1,78 @@
 package frame;
 
+import helpers.ComboBoxItem;
 import helpers.Koneksi;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class PistolInputFrame extends JFrame{
     private JPanel mainPanel;
     private JTextField idTextField;
     private JTextField namaTextField;
+    private JTextField jenisTextField;
     private JTextField tipeTextField;
     private JTextField jarakTextField;
-    private JTextField jenisTextField;
-    private JTextField amunisiTextField;
+    private JTextField jumlahTextField;
     private JTextField beratTextField;
     private JTextField warnaTextField;
     private JPanel buttonPanel;
     private JButton simpanButton;
     private JButton batalButton;
+    private JTextField peluruTextField;
+    private JComboBox jenisComboBox;
 
-    private int id_pistol;
-    public void setId_pistol(int id_pistol) {
-    this.id_pistol = id_pistol;
+    private int id_senjata;
+    public void setId_senjata(int id_senjata) {
+        this.id_senjata = id_senjata;
     }
 
     public void isiKomponen() {
-        idTextField.setText(String.valueOf(id_pistol));
+        idTextField.setText(String.valueOf(id_senjata));
 
-        String findSQL = "SELECT * FROM pistol WHERE id_pistol = ?";
+        String findSQL = "SELECT * FROM senjata WHERE id_senjata = ?";
         Connection c = Koneksi.getConnection();
         PreparedStatement ps;
         try {
             ps = c.prepareStatement(findSQL);
-            ps.setInt(1, id_pistol);
+            ps.setInt(1, id_senjata);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                namaTextField.setText(rs.getString("nama_pistol"));
-                tipeTextField.setText(rs.getString("tipe_pistol"));
-                jarakTextField.setText(rs.getString("jarak_pistol"));
-                jenisTextField.setText(rs.getString("jenis_peluru"));
-                amunisiTextField.setText(rs.getString("amunisi_pistol"));
-                beratTextField.setText(rs.getString("berat_pistol"));
-                warnaTextField.setText(rs.getString("warna_pistol"));
+                idTextField.setText(String.valueOf(rs.getInt("id_senjata")));
+                namaTextField.setText(rs.getString("nama_senjata"));
+                tipeTextField.setText(rs.getString("tipe"));
+                jarakTextField.setText(rs.getString("jarak_peluru"));
+                peluruTextField.setText(rs.getString("tipe_peluru"));
+                jumlahTextField.setText(rs.getString("jumlah_amunisi"));
+                beratTextField.setText(rs.getString("berat"));
+                warnaTextField.setText(rs.getString("warna"));
+
+                int senjataId = rs.getInt("jenis_senjata");
+                for (int i = 0; i < jenisComboBox.getItemCount(); i++){
+                    jenisComboBox.setSelectedIndex(i);
+                    ComboBoxItem item = (ComboBoxItem) jenisComboBox.getSelectedItem();
+                    if (senjataId == item.getValue()){
+                        break;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void kostumisasiKomponen(){
+        String selectSQL = "SELECT * FROM jenis_senjata ORDER BY jenis";
+        Connection c = Koneksi.getConnection();
+        try {
+            Statement s = c.createStatement();
+            ResultSet rs = s.executeQuery(selectSQL);
+            jenisComboBox.addItem(new ComboBoxItem(0, "Pilih Jenis Senjata"));
+            while (rs.next()){
+                jenisComboBox.addItem(new ComboBoxItem(
+                        rs.getInt("id"),
+                        rs.getString("jenis")
+                ));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -56,89 +83,99 @@ public class PistolInputFrame extends JFrame{
         simpanButton.addActionListener(e -> {
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
-            String nama_pistol = namaTextField.getText();
-            String tipe_pistol = tipeTextField.getText();
-            String jarak_pistol = jarakTextField.getText();
-            String jenis_peluru = jenisTextField.getText();
-            String amunisi_pistol = amunisiTextField.getText();
-            String berat_pistol = beratTextField.getText();
-            String warna_pistol = warnaTextField.getText();
+            String nama_senjata = namaTextField.getText();
+            String tipe = tipeTextField.getText();
+            String jarak_peluru = jarakTextField.getText();
+            String tipe_peluru = peluruTextField.getText();
+            String jumlah_amunisi = jumlahTextField.getText();
+            String berat = beratTextField.getText();
+            String warna = warnaTextField.getText();
 
-            if (nama_pistol.equals("")) {
+            if (nama_senjata.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data nama Pistol",
+                        "Isi data nama Senjata",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
                 namaTextField.requestFocus();
                 return;
-            } else if (tipe_pistol.equals("")) {
+            } else if (tipe.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data Tipe Pistol",
+                        "Isi data Jarak Tipe",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
                 tipeTextField.requestFocus();
                 return;
-            } else if (jarak_pistol.equals("")) {
+            } else if (jarak_peluru.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data Jarak Jangkauan Pistol",
+                        "Isi data Jarak Peluru",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
                 jarakTextField.requestFocus();
                 return;
-            } else if (jenis_peluru.equals("")) {
+            } else if (tipe_peluru.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data Jenis Peluru",
+                        "Isi data Tipe Peluru",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
-                jenisTextField.requestFocus();
+                peluruTextField.requestFocus();
                 return;
-            } else if (amunisi_pistol.equals("")) {
+            } else if (jumlah_amunisi.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data Amunisi Pistol",
+                        "Isi data Jumlah Amunisi",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
-                amunisiTextField.requestFocus();
+                jumlahTextField.requestFocus();
                 return;
-            } else if (berat_pistol.equals("")) {
+            } else if (berat.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data Berat Pistol",
+                        "Isi data Berat Senjata",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
                 beratTextField.requestFocus();
                 return;
-            } else if (warna_pistol.equals("")) {
+            } else if (warna.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
-                        "Isi data Warna Pistol",
+                        "Isi data Warna Senjat",
                         "Validasi data kosong",
                         JOptionPane.WARNING_MESSAGE
                 );
                 warnaTextField.requestFocus();
                 return;
             }
-            try {
-                if (this.id_pistol == 0) { //jika TAMBAH
 
-                    String cekSQL = "SELECT * FROM pistol WHERE nama_pistol=?";
+            ComboBoxItem item = (ComboBoxItem) jenisComboBox.getSelectedItem();
+            int senjataId = item.getValue();
+            if (senjataId == 0) {
+                JOptionPane.showMessageDialog(null,
+                        "Pilih Jenis Senjata",
+                        "Validasi ComboBox",JOptionPane.WARNING_MESSAGE);
+                jenisComboBox.requestFocus();
+                return;
+            }
+            try {
+                if (this.id_senjata == 0) { //jika TAMBAH
+
+                    String cekSQL = "SELECT * FROM senjata WHERE nama_senjata=?";
                     ps = c.prepareStatement(cekSQL);
-                    ps.setString(1, nama_pistol);
+                    ps.setString(1, nama_senjata);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) { // kalau ADA
                         JOptionPane.showMessageDialog(
                                 null,
-                                "Nama Pistol sama sudah ada",
+                                "Nama Senjata sama sudah ada",
                                 "Validasi data sama",
                                 JOptionPane.WARNING_MESSAGE
                         );
@@ -146,32 +183,34 @@ public class PistolInputFrame extends JFrame{
                     }
 
 
-                    String insertSQL = "INSERT INTO pistol (id_pistol,nama_pistol,tipe_pistol,jarak_pistol,jenis_peluru,amunisi_pistol,berat_pistol,warna_pistol) VALUES (NULL,?)";
-                    insertSQL = "INSERT INTO `pistol` (`id_pistol`, `nama_pistol`,`tipe_pistol`,`jarak_pistol`,`jenis_peluru`,`amunisi_pistol`,`berat_pistol`,`warna_pistol`) VALUES (NULL, ?)";
-                    insertSQL = "INSERT INTO `pistol` VALUES (NULL, ?)";
-                    insertSQL = "INSERT INTO pistol (nama_pistol,tipe_pistol,jarak_pistol,jenis_peluru,amunisi_pistol,berat_pistol,warna_pistol) VALUES (?)";
-                    insertSQL = "INSERT INTO pistol SET nama_pistol=?,tipe_pistol=?,jarak_pistol=?,jenis_peluru=?,amunisi_pistol=?,berat_pistol=?,warna_pistol=?";
+                    String insertSQL = "INSERT INTO senjata (id_senjata,nama_senjata,jenis_senjata,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    insertSQL = "INSERT INTO `senjata` (`id_senjata`, `nama_senjata`,`jenis_senjata`,`tipe`,`jarak_peluru`,`tipe_peluru`,`jumlah_amunisi`,`berat`,`warna`) VALUES (NULL, ?)";
+                    insertSQL = "INSERT INTO `senjata` VALUES (NULL, ?)";
+                    insertSQL = "INSERT INTO senjata (nama_senjata,jenis_senjata,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (?)";
+                    insertSQL = "INSERT INTO senjata SET nama_senjata=?,jenis_senjata=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=?";
                     ps = c.prepareStatement(insertSQL);
-                    ps.setString(1, nama_pistol);
-                    ps.setString(2, tipe_pistol);
-                    ps.setString(3, jarak_pistol);
-                    ps.setString(4, jenis_peluru);
-                    ps.setString(5, amunisi_pistol);
-                    ps.setString(6, berat_pistol);
-                    ps.setString(7, warna_pistol);
+                    ps.setString(1, nama_senjata);
+                    ps.setInt(2, senjataId);
+                    ps.setString(3, tipe);
+                    ps.setString(4, jarak_peluru);
+                    ps.setString(5, tipe_peluru);
+                    ps.setString(6, jumlah_amunisi);
+                    ps.setString(7, berat);
+                    ps.setString(8, warna);
                     ps.executeUpdate();
                     dispose();
                 } else {
-                    String cekSQL = "SELECT * FROM pistol WHERE nama_pistol=? AND tipe_pistol=? AND jarak_pistol=? AND jenis_peluru=? AND amunisi_pistol=? AND berat_pistol=? AND warna_pistol=? AND id_pistol!=?";
+                    String cekSQL = "SELECT * FROM senjata WHERE nama_senjata=? AND jenis_senjata=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND id_senjata!=?";
                     ps = c.prepareStatement(cekSQL);
-                    ps.setString(1, nama_pistol);
-                    ps.setString(2, tipe_pistol);
-                    ps.setString(3, jarak_pistol);
-                    ps.setString(4, jenis_peluru);
-                    ps.setString(5, amunisi_pistol);
-                    ps.setString(6, berat_pistol);
-                    ps.setString(7, warna_pistol);
-                    ps.setInt(8, id_pistol);
+                    ps.setString(1, nama_senjata);
+                    ps.setInt(2, senjataId);
+                    ps.setString(3, tipe);
+                    ps.setString(4, jarak_peluru);
+                    ps.setString(5, tipe_peluru);
+                    ps.setString(6, jumlah_amunisi);
+                    ps.setString(7, berat);
+                    ps.setString(8, warna);
+                    ps.setInt(9, id_senjata);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) { // kalau ADA
                         JOptionPane.showMessageDialog(
@@ -183,16 +222,17 @@ public class PistolInputFrame extends JFrame{
                         return;
                     }
 
-                    String updateSQL = "UPDATE pistol SET nama_pistol=?,tipe_pistol=?,jarak_pistol=?,jenis_peluru=?,amunisi_pistol=?,berat_pistol=?,warna_pistol=? WHERE id_pistol=?";
+                    String updateSQL = "UPDATE senjata SET nama_senjata=?,jenis_senjata=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? WHERE id_senjata=?";
                     ps = c.prepareStatement(updateSQL);
-                    ps.setString(1, nama_pistol);
-                    ps.setString(2, tipe_pistol);
-                    ps.setString(3, jarak_pistol);
-                    ps.setString(4, jenis_peluru);
-                    ps.setString(5, amunisi_pistol);
-                    ps.setString(6, berat_pistol);
-                    ps.setString(7, warna_pistol);
-                    ps.setInt(8,id_pistol);
+                    ps.setString(1, nama_senjata);
+                    ps.setInt(2, senjataId);
+                    ps.setString(3, tipe);
+                    ps.setString(4, jarak_peluru);
+                    ps.setString(5, tipe_peluru);
+                    ps.setString(6, jumlah_amunisi);
+                    ps.setString(7, berat);
+                    ps.setString(8, warna);
+                    ps.setInt(9, id_senjata);
                     ps.executeUpdate();
                     dispose();
                 }
@@ -200,17 +240,16 @@ public class PistolInputFrame extends JFrame{
                 throw new RuntimeException(ex);
             }
         });
-        batalButton.addActionListener(e -> {
-            dispose();
-        });
+        batalButton.addActionListener(e -> dispose());
+        kostumisasiKomponen();
         init();
     }
 
-            public void init() {
-                setContentPane(mainPanel);
-                pack();
-                setTitle("Input Pistol");
-                setLocationRelativeTo(null);
-                setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            }
-        }
+    public void init() {
+        setContentPane(mainPanel);
+        pack();
+        setTitle("Input Senjata");
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+}

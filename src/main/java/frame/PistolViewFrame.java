@@ -46,10 +46,10 @@ public class PistolViewFrame extends JFrame {
             }
             TableModel tm = viewTable.getModel();
             String idString = tm.getValueAt(barisTerpilih,0).toString();
-            int id = Integer.parseInt(idString);
+            int id_senjata = Integer.parseInt(idString);
 
             PistolInputFrame inputFrame = new PistolInputFrame();
-            inputFrame.setId_pistol(id);
+            inputFrame.setId_senjata(id_senjata);
             inputFrame.isiKomponen();
             inputFrame.setVisible(true);
         });
@@ -58,7 +58,7 @@ public class PistolViewFrame extends JFrame {
             if(barisTerpilih < 0){
                 JOptionPane.showMessageDialog(
                         null,
-                        "Pilih data",
+                        "Pilih data yang ingin dihapus",
                         "Validasi Pilih Data",
                         JOptionPane.WARNING_MESSAGE
                 );
@@ -75,12 +75,13 @@ public class PistolViewFrame extends JFrame {
                 String idString = tm.getValueAt(barisTerpilih,0).toString();
                 int id = Integer.parseInt(idString);
 
-                String deleteSQL = "DELETE FROM pistol WHERE Id_pistol = ?";
+                String deleteSQL = "DELETE FROM senjata WHERE id_senjata = ?";
                 Connection c= Koneksi.getConnection();
+                int id_senjata = Integer.parseInt(idString);
                 PreparedStatement ps;
                 try {
                     ps = c.prepareStatement(deleteSQL);
-                    ps.setInt(1,id);
+                    ps.setInt(1,id_senjata);
                     ps.executeUpdate();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -88,31 +89,39 @@ public class PistolViewFrame extends JFrame {
             }
         });
         cariButton.addActionListener(e -> {
+            if(cariTextField.getText().equals("")){
+                JOptionPane.showMessageDialog(null,
+                        "Isi kata kunci pencarian",
+                        "Validasi kata kunci kosong",
+                        JOptionPane.WARNING_MESSAGE);
+                cariTextField.requestFocus();
+                return;
+            }
             String keyword = "%"+cariTextField.getText()+"%";
-            String searchSQL = "SELECT * FROM pistol WHERE nama_pistol like ?";
+            String searchSQL = "SELECT * FROM senjata WHERE nama_senjata like ?";
             Connection c = Koneksi.getConnection();
             try {
                 PreparedStatement ps = c.prepareStatement(searchSQL);
                 ps.setString(1, keyword);
                 ResultSet rs = ps.executeQuery();
-
-                String[] header = {"Id Pistol", "Nama", "Tipe", "Jarak", "Peluru", "Amunisi", "Berat", "Warna"};
-                DefaultTableModel dtm = new DefaultTableModel(header,0);
+                DefaultTableModel dtm = (DefaultTableModel) viewTable.getModel();
+                dtm.setRowCount(0);
                 viewTable.setModel(dtm);
                 viewTable.getColumnModel().getColumn(0).setWidth(32);
                 viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
                 viewTable.getColumnModel().getColumn(0).setMinWidth(32);
                 viewTable.getColumnModel().getColumn(0).setPreferredWidth(32);
-                Object[] row = new Object[8];
+                Object[] row = new Object[9];
                 while (rs.next()){
-                    row[0] = rs.getInt("Id_pistol");
-                    row[1] = rs.getString("nama_pistol");
-                    row[2] = rs.getString("tipe_pistol");
-                    row[3] = rs.getInt("jarak_pistol");
-                    row[4] = rs.getString("jenis_peluru");
-                    row[5] = rs.getString("amunisi_pistol");
-                    row[6] = rs.getString("berat_pistol");
-                    row[7] = rs.getString("warna_pistol");
+                    row[0] = rs.getInt("id_senjata");
+                    row[1] = rs.getString("nama_senjata");
+                    row[2] = rs.getString("jenis_senjata");
+                    row[3] = rs.getString("tipe");
+                    row[4] = rs.getString("jarak_peluru");
+                    row[5] = rs.getString("tipe_peluru");
+                    row[6] = rs.getString("jumlah_amunisi");
+                    row[7] = rs.getString("berat");
+                    row[8] = rs.getString("warna");
                     dtm.addRow(row);
                 }
             } catch (SQLException ex) {
@@ -132,34 +141,35 @@ public class PistolViewFrame extends JFrame {
     public void init(){
         setContentPane(mainPanel);
         pack();
-        setTitle("Data Pistol");
+        setTitle("Data Senjata");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     public void isiTable() {
-        String selectSQL = "SELECT * FROM pistol";
+        String selectSQL = "SELECT * FROM Senjata";
         Connection c = Koneksi.getConnection();
         try {
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
 
-            String[] header = {"Id Pistol", "Nama", "Tipe", "Jarak", "Peluru", "Amunisi", "Berat", "Warna"};
+            String[] header = {"ID Senjata", "Nama Senjata", "Jenis Senjata", "Tipe Senjata", "Jarak Jangkau", "Tipe Peluru", "Jumlah Amunisi", "Berat", "Warna"};
             DefaultTableModel dtm = new DefaultTableModel(header,0);
             viewTable.setModel(dtm);
             viewTable.getColumnModel().getColumn(0).setWidth(32);
             viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
             viewTable.getColumnModel().getColumn(0).setMinWidth(32);
             viewTable.getColumnModel().getColumn(0).setPreferredWidth(32);
-            Object[] row = new Object[8];
+            Object[] row = new Object[9];
             while (rs.next()){
-                row[0] = rs.getInt("Id_pistol");
-                row[1] = rs.getString("nama_pistol");
-                row[2] = rs.getString("tipe_pistol");
-                row[3] = rs.getInt("jarak_pistol");
-                row[4] = rs.getString("jenis_peluru");
-                row[5] = rs.getString("amunisi_pistol");
-                row[6] = rs.getString("berat_pistol");
-                row[7] = rs.getString("warna_pistol");
+                row[0] = rs.getInt("id_senjata");
+                row[1] = rs.getString("nama_senjata");
+                row[2] = rs.getString("jenis_senjata");
+                row[3] = rs.getString("tipe");
+                row[4] = rs.getString("jarak_peluru");
+                row[5] = rs.getString("tipe_peluru");
+                row[6] = rs.getString("jumlah_amunisi");
+                row[7] = rs.getString("berat");
+                row[8] = rs.getString("warna");
                 dtm.addRow(row);
             }
         } catch (SQLException e) {
