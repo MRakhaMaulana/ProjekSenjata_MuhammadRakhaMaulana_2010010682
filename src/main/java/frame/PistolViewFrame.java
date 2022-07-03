@@ -146,7 +146,8 @@ public class PistolViewFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     public void isiTable() {
-        String selectSQL = "SELECT * FROM Senjata";
+        String selectSQL = "SELECT K.*,B.jenis AS jenis_senjata FROM senjata K " +
+                "LEFT JOIN jenis_senjata B ON K.jenis_senjata = B.id";
         Connection c = Koneksi.getConnection();
         try {
             Statement s = c.createStatement();

@@ -21,6 +21,12 @@ public class PistolInputFrame extends JFrame{
     private JButton batalButton;
     private JTextField peluruTextField;
     private JComboBox jenisComboBox;
+    private JPanel tipePanel;
+    private JRadioButton manualRadioButton;
+    private JRadioButton semiOtomatisRadioButton;
+    private JRadioButton otomatisRadioButton;
+
+    private ButtonGroup tipeButtonGroup;
 
     private int id_senjata;
     public void setId_senjata(int id_senjata) {
@@ -40,7 +46,6 @@ public class PistolInputFrame extends JFrame{
             if (rs.next()) {
                 idTextField.setText(String.valueOf(rs.getInt("id_senjata")));
                 namaTextField.setText(rs.getString("nama_senjata"));
-                tipeTextField.setText(rs.getString("tipe"));
                 jarakTextField.setText(rs.getString("jarak_peluru"));
                 peluruTextField.setText(rs.getString("tipe_peluru"));
                 jumlahTextField.setText(rs.getString("jumlah_amunisi"));
@@ -53,6 +58,16 @@ public class PistolInputFrame extends JFrame{
                     ComboBoxItem item = (ComboBoxItem) jenisComboBox.getSelectedItem();
                     if (senjataId == item.getValue()){
                         break;
+                    }
+                }
+                String tipe = rs.getString("Tipe");
+                if (tipe != null){
+                    if (tipe.equals("Manual")){
+                        manualRadioButton.setSelected(true);
+                    } else if (tipe.equals("Semi-Otomatis")){
+                        semiOtomatisRadioButton.setSelected(true);
+                    } else if (tipe.equals("Otomatis")){
+                        otomatisRadioButton.setSelected(true);
                     }
                 }
             }
@@ -77,6 +92,10 @@ public class PistolInputFrame extends JFrame{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        tipeButtonGroup = new ButtonGroup();
+        tipeButtonGroup.add(manualRadioButton);
+        tipeButtonGroup.add(semiOtomatisRadioButton);
+        tipeButtonGroup.add(otomatisRadioButton);
     }
 
     public PistolInputFrame() {
@@ -84,7 +103,6 @@ public class PistolInputFrame extends JFrame{
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
             String nama_senjata = namaTextField.getText();
-            String tipe = tipeTextField.getText();
             String jarak_peluru = jarakTextField.getText();
             String tipe_peluru = peluruTextField.getText();
             String jumlah_amunisi = jumlahTextField.getText();
@@ -99,15 +117,6 @@ public class PistolInputFrame extends JFrame{
                         JOptionPane.WARNING_MESSAGE
                 );
                 namaTextField.requestFocus();
-                return;
-            } else if (tipe.equals("")) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Isi data Jarak Tipe",
-                        "Validasi data kosong",
-                        JOptionPane.WARNING_MESSAGE
-                );
-                tipeTextField.requestFocus();
                 return;
             } else if (jarak_peluru.equals("")) {
                 JOptionPane.showMessageDialog(
@@ -165,6 +174,20 @@ public class PistolInputFrame extends JFrame{
                 jenisComboBox.requestFocus();
                 return;
             }
+
+            String tipe = "";
+            if (manualRadioButton.isSelected()){
+                tipe = "Manual";
+            } else if (semiOtomatisRadioButton.isSelected()){
+                tipe = "Semi-Otomatis";
+            } else if (otomatisRadioButton.isSelected()){
+                tipe = "Otomatis";
+            }else {
+                JOptionPane.showMessageDialog(null,
+                        "Pilih Tipe",
+                        "Validasi Data Kosong", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             try {
                 if (this.id_senjata == 0) { //jika TAMBAH
 
@@ -200,7 +223,7 @@ public class PistolInputFrame extends JFrame{
                     ps.executeUpdate();
                     dispose();
                 } else {
-                    String cekSQL = "SELECT * FROM senjata WHERE nama_senjata=? AND jenis_senjata=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND id_senjata!=?";
+                    String cekSQL = "SELECT * FROM senjata WHERE nama_senjata=? AND senjataId=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND id_senjata!=?";
                     ps = c.prepareStatement(cekSQL);
                     ps.setString(1, nama_senjata);
                     ps.setInt(2, senjataId);
@@ -222,7 +245,7 @@ public class PistolInputFrame extends JFrame{
                         return;
                     }
 
-                    String updateSQL = "UPDATE senjata SET nama_senjata=?,jenis_senjata=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? WHERE id_senjata=?";
+                    String updateSQL = "UPDATE senjata SET nama_senjata=?,senjataId=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? WHERE id_senjata=?";
                     ps = c.prepareStatement(updateSQL);
                     ps.setString(1, nama_senjata);
                     ps.setInt(2, senjataId);
