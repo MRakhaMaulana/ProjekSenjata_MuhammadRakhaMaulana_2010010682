@@ -6,8 +6,6 @@ import helpers.ComboBoxItem;
 import helpers.Koneksi;
 
 import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.sql.*;
 
 public class AtributInputFrame extends JFrame{
@@ -27,6 +25,7 @@ public class AtributInputFrame extends JFrame{
     private JRadioButton semiOtomatisRadioButton;
     private JRadioButton otomatisRadioButton;
     private JPanel mainPanel;
+    private DatePicker tglDibuatDatePicker;
     private ButtonGroup tipeButtonGroup;
 
     private int id;
@@ -50,6 +49,7 @@ public class AtributInputFrame extends JFrame{
             String jumlah_amunisi = jumlahTextField.getText();
             String berat = beratTextField.getText();
             String warna = warnaTextField.getText();
+            String tglDibuat = tglDibuatDatePicker.getText();
 
             if (nama.equals("")) {
                 JOptionPane.showMessageDialog(
@@ -96,6 +96,7 @@ public class AtributInputFrame extends JFrame{
                 );
                 beratTextField.requestFocus();
                 return;
+
             } else if (warna.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
@@ -104,6 +105,13 @@ public class AtributInputFrame extends JFrame{
                         JOptionPane.WARNING_MESSAGE
                 );
                 warnaTextField.requestFocus();
+                return;
+
+            } else if (tglDibuat.equals("")){
+                JOptionPane.showMessageDialog(null,
+                        "Isi Tanggal Dibuat",
+                        "Validasi Data Kosong",JOptionPane.WARNING_MESSAGE);
+                tglDibuatDatePicker.requestFocus();
                 return;
             }
 
@@ -147,11 +155,11 @@ public class AtributInputFrame extends JFrame{
                         return;
                     }
 
-                    String insertSQL = "INSERT INTO atribut (id,nama,jenis_id,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
-                    insertSQL = "INSERT INTO `atribut` (`id`, `nama`,`jenis_id`,`tipe`,`jarak_peluru`,`tipe_peluru`,`jumlah_amunisi`,`berat`,`warna`) VALUES (NULL, ?)";
+                    String insertSQL = "INSERT INTO atribut (id,nama,jenis_id,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna,tgldibuat) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    insertSQL = "INSERT INTO `atribut` (`id`, `nama`,`jenis_id`,`tipe`,`jarak_peluru`,`tipe_peluru`,`jumlah_amunisi`,`berat`,`warna`,`tgldibuat`) VALUES (NULL, ?)";
                     insertSQL = "INSERT INTO `atribut` VALUES (NULL, ?)";
-                    insertSQL = "INSERT INTO atribut (nama,jenis_id,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (?)";
-                    insertSQL = "INSERT INTO atribut SET nama=?,jenis_id=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=?";
+                    insertSQL = "INSERT INTO atribut (nama,jenis_id,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna,tgldibuat) VALUES (?)";
+                    insertSQL = "INSERT INTO atribut SET nama=?,jenis_id=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=?,tgldibuat=?";
                     ps = c.prepareStatement(insertSQL);
                     ps.setString(1, nama);
                     ps.setInt(2, senjataId);
@@ -161,10 +169,11 @@ public class AtributInputFrame extends JFrame{
                     ps.setString(6, jumlah_amunisi);
                     ps.setString(7, berat);
                     ps.setString(8, warna);
+                    ps.setString(9,tglDibuat);
                     ps.executeUpdate();
                     dispose();
                 } else {
-                    String cekSQL = "SELECT * FROM atribut WHERE nama=? AND jenis_id=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND id!=?";
+                    String cekSQL = "SELECT * FROM atribut WHERE nama=? AND jenis_id=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND tgldibuat=? AND id!=?";
                     ps = c.prepareStatement(cekSQL);
                     ps.setString(1, nama);
                     ps.setInt(2, senjataId);
@@ -174,7 +183,8 @@ public class AtributInputFrame extends JFrame{
                     ps.setString(6, jumlah_amunisi);
                     ps.setString(7, berat);
                     ps.setString(8, warna);
-                    ps.setInt(9, id);
+                    ps.setString(9, tglDibuat);
+                    ps.setInt(10, id);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) { // kalau ADA
                         JOptionPane.showMessageDialog(
@@ -186,7 +196,7 @@ public class AtributInputFrame extends JFrame{
                         return;
                     }
 
-                    String updateSQL = "UPDATE atribut SET nama=?,jenis_id=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? WHERE id=?";
+                    String updateSQL = "UPDATE atribut SET nama=?,jenis_id=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? tgldibuat=? WHERE id=?";
                     ps = c.prepareStatement(updateSQL);
                     ps.setString(1, nama);
                     ps.setInt(2, senjataId);
@@ -195,8 +205,8 @@ public class AtributInputFrame extends JFrame{
                     ps.setString(5, tipe_peluru);
                     ps.setString(6, jumlah_amunisi);
                     ps.setString(7, berat);
-                    ps.setString(8, warna);
-                    ps.setInt(9, id);
+                    ps.setString(9, tglDibuat);
+                    ps.setInt(10, id);
                     ps.executeUpdate();
                     dispose();
                 }
@@ -234,6 +244,7 @@ public class AtributInputFrame extends JFrame{
                 jumlahTextField.setText(rs.getString("jumlah_amunisi"));
                 beratTextField.setText(rs.getString("berat"));
                 warnaTextField.setText(rs.getString("warna"));
+                tglDibuatDatePicker.setText(rs.getString("tgldibuat"));
 
                 int senjataId = rs.getInt("jenis_id");
                 for (int i = 0; i < jenisComboBox.getItemCount(); i++){
@@ -279,5 +290,10 @@ public class AtributInputFrame extends JFrame{
         tipeButtonGroup.add(manualRadioButton);
         tipeButtonGroup.add(semiOtomatisRadioButton);
         tipeButtonGroup.add(otomatisRadioButton);
+
+        DatePickerSettings dps = new DatePickerSettings();
+        dps.setFormatForDatesCommonEra("yyyy-MM-dd");
+        tglDibuatDatePicker.setSettings(dps);
+
     }
 }

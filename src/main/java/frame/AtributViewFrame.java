@@ -12,8 +12,6 @@ import javax.swing.table.TableModel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 public class AtributViewFrame extends JFrame{
     private JPanel mainPanel;
@@ -68,7 +66,7 @@ public class AtributViewFrame extends JFrame{
                 ResultSet rs = s.executeQuery(selectSQL);
                 rs.last();
                 int jumlah = rs.getRow();
-                row = new Object[jumlah][9];
+                row = new Object[jumlah][10];
                 int i = 0;
                 rs.beforeFirst();
                 while (rs.next()){
@@ -81,9 +79,21 @@ public class AtributViewFrame extends JFrame{
                     row[i][6] = rs.getString("jumlah_amunisi");
                     row[i][7] = rs.getString("berat");
                     row[i][8] = rs.getString("warna");
+                    row[i][9] = rs.getString("tgldibuat");
                     i++;
                 }
             } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                JasperReport jasperReport =
+                        JasperCompileManager.compileReport("D:\\A DOKUMEN KAMPUS\\A MATERI\\4D - Semester 4\\PBO1 - Pemrograman Berbasis Objek 1\\ProjekSenjata2010010682\\src\\main\\resources\\atributt_report.jrxml");
+                JasperPrint jasperPrint =
+                        JasperFillManager.fillReport(jasperReport,null, new
+                                JasperDataSourceBuilder(row));
+                JasperViewer viewer = new JasperViewer(jasperPrint, false);
+                viewer.setVisible(true);
+            } catch (JRException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -136,7 +146,7 @@ public class AtributViewFrame extends JFrame{
                 DefaultTableModel dtm = (DefaultTableModel) viewTable.getModel();
                 dtm.setRowCount(0);
                 viewTable.setModel(dtm);
-                Object[] row = new Object[9];
+                Object[] row = new Object[10];
                 while (rs.next()){
                     row[0] = rs.getInt("id");
                     row[1] = rs.getString("nama");
@@ -147,6 +157,7 @@ public class AtributViewFrame extends JFrame{
                     row[6] = rs.getString("jumlah_amunisi");
                     row[7] = rs.getString("berat");
                     row[8] = rs.getString("warna");
+                    row[9] = rs.getString("tgldibuat");
                     dtm.addRow(row);
                 }
             } catch (SQLException ex) {
@@ -170,7 +181,7 @@ public class AtributViewFrame extends JFrame{
             Statement s = c.createStatement();
             ResultSet rs = s.executeQuery(selectSQL);
 
-            String[] header = {"ID Senjata", "Nama Senjata", "Jenis Senjata", "Tipe Senjata", "Jarak Jangkau", "Tipe Peluru", "Jumlah Amunisi", "Berat", "Warna"};
+            String[] header = {"ID Senjata", "Nama Senjata", "Jenis Senjata", "Tipe Senjata", "Jarak Jangkau", "Tipe Peluru", "Jumlah Amunisi", "Berat", "Warna", "Tanggal Dibuat"};
             DefaultTableModel dtm = new DefaultTableModel(header,0);
             viewTable.setModel(dtm);
             viewTable.getColumnModel().getColumn(0).setMaxWidth(32);
@@ -185,7 +196,8 @@ public class AtributViewFrame extends JFrame{
             viewTable.getColumnModel().getColumn(6).setCellRenderer(rightRenderer);
             viewTable.getColumnModel().getColumn(7).setCellRenderer(rightRenderer);
             viewTable.getColumnModel().getColumn(8).setCellRenderer(rightRenderer);
-            Object[] row = new Object[9];
+            viewTable.getColumnModel().getColumn(9).setCellRenderer(rightRenderer);
+            Object[] row = new Object[10];
             while (rs.next()){
                 row[0] = rs.getInt("id");
                 row[1] = rs.getString("nama");
@@ -196,6 +208,7 @@ public class AtributViewFrame extends JFrame{
                 row[6] = rs.getString("jumlah_amunisi");
                 row[7] = rs.getString("berat");
                 row[8] = rs.getString("warna");
+                row[9] = rs.getString("tgldibuat");
                 dtm.addRow(row);
             }
         } catch (SQLException e) {
