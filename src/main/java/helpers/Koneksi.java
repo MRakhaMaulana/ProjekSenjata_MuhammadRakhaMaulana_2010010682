@@ -11,7 +11,7 @@ public class Koneksi {
             System.out.println("Connecting..");
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost/senjata",
+                    "jdbc:mysql://localhost/proyek_uas_pbo1",
                     "root",
                     ""
             );
@@ -20,7 +20,7 @@ public class Koneksi {
         } catch (ClassNotFoundException e) {
             System.err.println("Class tidak ditemukan");
         } catch (SQLException e) {
-            System.err.println("Nama database salah");
+            System.err.println("SQL error!");
         }
         return null;
     }

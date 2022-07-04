@@ -1,17 +1,18 @@
 package frame;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import helpers.ComboBoxItem;
 import helpers.Koneksi;
 
 import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.*;
 
-public class PistolInputFrame extends JFrame{
-    private JPanel mainPanel;
+public class AtributInputFrame extends JFrame{
     private JTextField idTextField;
     private JTextField namaTextField;
-    private JTextField jenisTextField;
-    private JTextField tipeTextField;
     private JTextField jarakTextField;
     private JTextField jumlahTextField;
     private JTextField beratTextField;
@@ -25,91 +26,32 @@ public class PistolInputFrame extends JFrame{
     private JRadioButton manualRadioButton;
     private JRadioButton semiOtomatisRadioButton;
     private JRadioButton otomatisRadioButton;
-
+    private JPanel mainPanel;
     private ButtonGroup tipeButtonGroup;
 
-    private int id_senjata;
-    public void setId_senjata(int id_senjata) {
-        this.id_senjata = id_senjata;
+    private int id;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void isiKomponen() {
-        idTextField.setText(String.valueOf(id_senjata));
+    public AtributInputFrame() {
+        //BATAL BUTTON
+        batalButton.addActionListener(e -> {
+            dispose();
+        });
 
-        String findSQL = "SELECT * FROM senjata WHERE id_senjata = ?";
-        Connection c = Koneksi.getConnection();
-        PreparedStatement ps;
-        try {
-            ps = c.prepareStatement(findSQL);
-            ps.setInt(1, id_senjata);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                idTextField.setText(String.valueOf(rs.getInt("id_senjata")));
-                namaTextField.setText(rs.getString("nama_senjata"));
-                jarakTextField.setText(rs.getString("jarak_peluru"));
-                peluruTextField.setText(rs.getString("tipe_peluru"));
-                jumlahTextField.setText(rs.getString("jumlah_amunisi"));
-                beratTextField.setText(rs.getString("berat"));
-                warnaTextField.setText(rs.getString("warna"));
-
-                int senjataId = rs.getInt("jenis_senjata");
-                for (int i = 0; i < jenisComboBox.getItemCount(); i++){
-                    jenisComboBox.setSelectedIndex(i);
-                    ComboBoxItem item = (ComboBoxItem) jenisComboBox.getSelectedItem();
-                    if (senjataId == item.getValue()){
-                        break;
-                    }
-                }
-                String tipe = rs.getString("Tipe");
-                if (tipe != null){
-                    if (tipe.equals("Manual")){
-                        manualRadioButton.setSelected(true);
-                    } else if (tipe.equals("Semi-Otomatis")){
-                        semiOtomatisRadioButton.setSelected(true);
-                    } else if (tipe.equals("Otomatis")){
-                        otomatisRadioButton.setSelected(true);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void kostumisasiKomponen(){
-        String selectSQL = "SELECT * FROM jenis_senjata ORDER BY jenis";
-        Connection c = Koneksi.getConnection();
-        try {
-            Statement s = c.createStatement();
-            ResultSet rs = s.executeQuery(selectSQL);
-            jenisComboBox.addItem(new ComboBoxItem(0, "Pilih Jenis Senjata"));
-            while (rs.next()){
-                jenisComboBox.addItem(new ComboBoxItem(
-                        rs.getInt("id"),
-                        rs.getString("jenis")
-                ));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        tipeButtonGroup = new ButtonGroup();
-        tipeButtonGroup.add(manualRadioButton);
-        tipeButtonGroup.add(semiOtomatisRadioButton);
-        tipeButtonGroup.add(otomatisRadioButton);
-    }
-
-    public PistolInputFrame() {
+        //SIMPAN BUTTON
         simpanButton.addActionListener(e -> {
             Connection c = Koneksi.getConnection();
             PreparedStatement ps;
-            String nama_senjata = namaTextField.getText();
+            String nama = namaTextField.getText();
             String jarak_peluru = jarakTextField.getText();
             String tipe_peluru = peluruTextField.getText();
             String jumlah_amunisi = jumlahTextField.getText();
             String berat = beratTextField.getText();
             String warna = warnaTextField.getText();
 
-            if (nama_senjata.equals("")) {
+            if (nama.equals("")) {
                 JOptionPane.showMessageDialog(
                         null,
                         "Isi data nama Senjata",
@@ -189,11 +131,11 @@ public class PistolInputFrame extends JFrame{
                 return;
             }
             try {
-                if (this.id_senjata == 0) { //jika TAMBAH
+                if (this.id == 0) { //jika TAMBAH
 
-                    String cekSQL = "SELECT * FROM senjata WHERE nama_senjata=?";
+                    String cekSQL = "SELECT * FROM atribut WHERE nama=?";
                     ps = c.prepareStatement(cekSQL);
-                    ps.setString(1, nama_senjata);
+                    ps.setString(1, nama);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) { // kalau ADA
                         JOptionPane.showMessageDialog(
@@ -205,14 +147,13 @@ public class PistolInputFrame extends JFrame{
                         return;
                     }
 
-
-                    String insertSQL = "INSERT INTO senjata (id_senjata,nama_senjata,jenis_senjata,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
-                    insertSQL = "INSERT INTO `senjata` (`id_senjata`, `nama_senjata`,`jenis_senjata`,`tipe`,`jarak_peluru`,`tipe_peluru`,`jumlah_amunisi`,`berat`,`warna`) VALUES (NULL, ?)";
-                    insertSQL = "INSERT INTO `senjata` VALUES (NULL, ?)";
-                    insertSQL = "INSERT INTO senjata (nama_senjata,jenis_senjata,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (?)";
-                    insertSQL = "INSERT INTO senjata SET nama_senjata=?,jenis_senjata=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=?";
+                    String insertSQL = "INSERT INTO atribut (id,nama,jenis_id,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    insertSQL = "INSERT INTO `atribut` (`id`, `nama`,`jenis_id`,`tipe`,`jarak_peluru`,`tipe_peluru`,`jumlah_amunisi`,`berat`,`warna`) VALUES (NULL, ?)";
+                    insertSQL = "INSERT INTO `atribut` VALUES (NULL, ?)";
+                    insertSQL = "INSERT INTO atribut (nama,jenis_id,tipe,jarak_peluru,tipe_peluru,jumlah_amunisi,berat,warna) VALUES (?)";
+                    insertSQL = "INSERT INTO atribut SET nama=?,jenis_id=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=?";
                     ps = c.prepareStatement(insertSQL);
-                    ps.setString(1, nama_senjata);
+                    ps.setString(1, nama);
                     ps.setInt(2, senjataId);
                     ps.setString(3, tipe);
                     ps.setString(4, jarak_peluru);
@@ -223,9 +164,9 @@ public class PistolInputFrame extends JFrame{
                     ps.executeUpdate();
                     dispose();
                 } else {
-                    String cekSQL = "SELECT * FROM senjata WHERE nama_senjata=? AND senjataId=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND id_senjata!=?";
+                    String cekSQL = "SELECT * FROM atribut WHERE nama=? AND jenis_id=? AND tipe=? AND jarak_peluru=? AND tipe_peluru=? AND jumlah_amunisi=? AND berat=? AND warna=? AND id!=?";
                     ps = c.prepareStatement(cekSQL);
-                    ps.setString(1, nama_senjata);
+                    ps.setString(1, nama);
                     ps.setInt(2, senjataId);
                     ps.setString(3, tipe);
                     ps.setString(4, jarak_peluru);
@@ -233,7 +174,7 @@ public class PistolInputFrame extends JFrame{
                     ps.setString(6, jumlah_amunisi);
                     ps.setString(7, berat);
                     ps.setString(8, warna);
-                    ps.setInt(9, id_senjata);
+                    ps.setInt(9, id);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) { // kalau ADA
                         JOptionPane.showMessageDialog(
@@ -245,9 +186,9 @@ public class PistolInputFrame extends JFrame{
                         return;
                     }
 
-                    String updateSQL = "UPDATE senjata SET nama_senjata=?,senjataId=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? WHERE id_senjata=?";
+                    String updateSQL = "UPDATE atribut SET nama=?,jenis_id=?,tipe=?,jarak_peluru=?,tipe_peluru=?,jumlah_amunisi=?,berat=?,warna=? WHERE id=?";
                     ps = c.prepareStatement(updateSQL);
-                    ps.setString(1, nama_senjata);
+                    ps.setString(1, nama);
                     ps.setInt(2, senjataId);
                     ps.setString(3, tipe);
                     ps.setString(4, jarak_peluru);
@@ -255,7 +196,7 @@ public class PistolInputFrame extends JFrame{
                     ps.setString(6, jumlah_amunisi);
                     ps.setString(7, berat);
                     ps.setString(8, warna);
-                    ps.setInt(9, id_senjata);
+                    ps.setInt(9, id);
                     ps.executeUpdate();
                     dispose();
                 }
@@ -274,5 +215,69 @@ public class PistolInputFrame extends JFrame{
         setTitle("Input Senjata");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+    public void isiKomponen() {
+        idTextField.setText(String.valueOf(id));
+
+        String findSQL = "SELECT * FROM atribut WHERE id = ?";
+        Connection c = Koneksi.getConnection();
+        PreparedStatement ps;
+        try {
+            ps = c.prepareStatement(findSQL);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                idTextField.setText(String.valueOf(rs.getInt("id")));
+                namaTextField.setText(rs.getString("nama"));
+                jarakTextField.setText(rs.getString("jarak_peluru"));
+                peluruTextField.setText(rs.getString("tipe_peluru"));
+                jumlahTextField.setText(rs.getString("jumlah_amunisi"));
+                beratTextField.setText(rs.getString("berat"));
+                warnaTextField.setText(rs.getString("warna"));
+
+                int senjataId = rs.getInt("jenis_id");
+                for (int i = 0; i < jenisComboBox.getItemCount(); i++){
+                    jenisComboBox.setSelectedIndex(i);
+                    ComboBoxItem item = (ComboBoxItem) jenisComboBox.getSelectedItem();
+                    if (senjataId == item.getValue()){
+                        break;
+                    }
+                }
+                String tipe = rs.getString("Tipe");
+                if (tipe != null){
+                    if (tipe.equals("Manual")){
+                        manualRadioButton.setSelected(true);
+                    } else if (tipe.equals("Semi-Otomatis")){
+                        semiOtomatisRadioButton.setSelected(true);
+                    } else if (tipe.equals("Otomatis")){
+                        otomatisRadioButton.setSelected(true);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void kostumisasiKomponen(){
+        String selectSQL = "SELECT * FROM senjata ORDER BY jenis";
+        Connection c = Koneksi.getConnection();
+        try {
+            Statement s = c.createStatement();
+            ResultSet rs = s.executeQuery(selectSQL);
+            jenisComboBox.addItem(new ComboBoxItem(0, "Pilih Jenis Senjata"));
+            while (rs.next()){
+                jenisComboBox.addItem(new ComboBoxItem(
+                        rs.getInt("id"),
+                        rs.getString("jenis")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        tipeButtonGroup = new ButtonGroup();
+        tipeButtonGroup.add(manualRadioButton);
+        tipeButtonGroup.add(semiOtomatisRadioButton);
+        tipeButtonGroup.add(otomatisRadioButton);
     }
 }
